@@ -1,4 +1,4 @@
-package com.example.whistleblowerltd
+package com.pixelz.whistleblower
 
 import io.flutter.embedding.android.FlutterActivity
 
