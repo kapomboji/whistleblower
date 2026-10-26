@@ -1,5 +1,5 @@
-name: whistleblowerltd
-description: "A new Flutter project."
+name: WhistleBlower
+description: "A secure and anonymous whistleblowing platform for reporting misconduct and unethical behavior within organizations."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -78,7 +78,6 @@ flutter:
   assets:
     - assets/logo.png
     - assets/logo_mark.png
-    - assets/Whistle blower logo.svg
     - assets/Whistle blower logo.vec
     - assets/anony.png
     - assets/fwd.png
@@ -93,6 +92,7 @@ flutter:
     - assets/Info.png
     - assets/AuthorityAbuse.png
     - assets/FraudInverted.png
+    - assets/others.png
     - assets/capture.png 
     - assets/record.png
     - assets/dropbox.png

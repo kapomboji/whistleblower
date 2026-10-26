@@ -17,7 +17,9 @@ class FraudTopBar extends StatelessWidget {
     'Report Abuse of Authority': 'assets/AuthorityAbuse.png',
     'Report Financial Misreporting': 'assets/Financial.png',
     'Report Breaches of Company Policy': 'assets/Ploicyb.png',
-    'Report Serious Health, Safety and Environmental Violations': 'assets/health.png',
+    'Report Serious Health, Safety and Environmental Violations':
+        'assets/health.png',
+    'Report Other Concerns': 'assets/others.png',
   };
 
   String _iconPathForTitle(String reportTitle) {
@@ -28,35 +30,32 @@ class FraudTopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final iconPath = _iconPathForTitle(title);
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-      child: Row(
+    return Container(
+      width: double.infinity,
+      height: 99,
+      color: AppColors.background,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Stack(
+        alignment: Alignment.center,
         children: [
-          IconButton(
-            onPressed: () => Navigator.of(context).pop(),
-            icon: const Icon(Icons.arrow_back, color: AppColors.darkBlue),
-          ),
-          const SizedBox(width: 4),
-          Expanded(
-            child: Text(
-              title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: AppColors.darkBlue,
-                fontSize: 16,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-          ),
           Row(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              IconButton(
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints.tightFor(
+                  width: 48,
+                  height: 48,
+                ),
+                onPressed: () => Navigator.of(context).pop(),
+                icon: const Icon(Icons.arrow_back, color: AppColors.white),
+              ),
               Image.asset(
                 iconPath,
-                width: 28,
-                height: 28,
+                width: 40,
+                height: 40,
                 fit: BoxFit.contain,
-                color: AppColors.darkBlue,
+                color: AppColors.white,
                 colorBlendMode: BlendMode.srcIn,
                 errorBuilder: (context, error, stackTrace) {
                   return Container(
@@ -64,17 +63,32 @@ class FraudTopBar extends StatelessWidget {
                     height: 28,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.darkBlue, width: 1.2),
+                      border: Border.all(color: AppColors.white, width: 1.2),
                     ),
                     child: const Icon(
                       Icons.report_problem,
                       size: 16,
-                      color: AppColors.darkBlue,
+                      color: AppColors.white,
                     ),
                   );
                 },
               ),
             ],
+          ),
+          Positioned(
+            left: 64,
+            right: 64,
+            child: Text(
+              title,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: AppColors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
           ),
         ],
       ),
@@ -102,12 +116,6 @@ class SectionHeader extends StatelessWidget {
               letterSpacing: 0.6,
             ),
           ),
-        ),
-        const SizedBox(height: 10),
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 30),
-          height: 1,
-          color: AppColors.background,
         ),
       ],
     );
@@ -150,17 +158,15 @@ class ReportField extends StatefulWidget {
   State<ReportField> createState() => _ReportFieldState();
 }
 
-class _ReportFieldState extends State<ReportField> with TickerProviderStateMixin {
+class _ReportFieldState extends State<ReportField>
+    with TickerProviderStateMixin {
   late FocusNode _focusNode;
   late AnimationController _delayController;
 
   @override
   void initState() {
     super.initState();
-    _focusNode = FocusNode()
-      ..addListener(() {
-        setState(() {});
-      });
+    _focusNode = FocusNode();
     _delayController = AnimationController(
       duration: Duration(milliseconds: 600 + (widget.animationDelay * 100)),
       vsync: this,
@@ -188,13 +194,16 @@ class _ReportFieldState extends State<ReportField> with TickerProviderStateMixin
           width: 22,
           height: 22,
           fit: BoxFit.contain,
-          colorFilter: const ColorFilter.mode(AppColors.darkBlue, BlendMode.srcIn),
+          colorFilter: const ColorFilter.mode(
+            Color(0xFF5C5C5C),
+            BlendMode.srcIn,
+          ),
         ),
       );
     }
 
     if (widget.prefixIcon != null) {
-      return Icon(widget.prefixIcon, color: AppColors.darkBlue);
+      return Icon(widget.prefixIcon, color: const Color(0xFF5C5C5C));
     }
 
     return null;
@@ -202,8 +211,6 @@ class _ReportFieldState extends State<ReportField> with TickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    final hasFocus = _focusNode.hasFocus;
-
     final field = TextFormField(
       focusNode: _focusNode,
       controller: widget.controller,
@@ -213,18 +220,21 @@ class _ReportFieldState extends State<ReportField> with TickerProviderStateMixin
       onTap: widget.onTap,
       decoration: InputDecoration(
         filled: true,
-        fillColor: hasFocus ? Colors.white : const Color(0xFFF1F2F7),
+        fillColor: const Color(0xFFF0F0F0),
         hintText: widget.hintText,
         prefixIcon: _buildPrefixWidget(),
-        prefixIconConstraints: const BoxConstraints(minWidth: 42, minHeight: 42),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-        isDense: false,
+        prefixIconConstraints: const BoxConstraints(
+          minWidth: 42,
+          minHeight: 44,
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        isDense: true,
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(24),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(24),
           borderSide: BorderSide(color: AppColors.background, width: 2.0),
         ),
       ),
@@ -246,19 +256,21 @@ class _ReportFieldState extends State<ReportField> with TickerProviderStateMixin
     final fieldChild = widget.heroTag != null
         ? Hero(
             tag: widget.heroTag!,
-            createRectTween: (begin, end) => MaterialRectCenterArcTween(begin: begin, end: end),
-            flightShuttleBuilder: (
-              BuildContext flightContext,
-              Animation<double> animation,
-              HeroFlightDirection flightDirection,
-              BuildContext fromHeroContext,
-              BuildContext toHeroContext,
-            ) {
-              return Material(
-                color: Colors.transparent,
-                child: toHeroContext.widget,
-              );
-            },
+            createRectTween: (begin, end) =>
+                MaterialRectCenterArcTween(begin: begin, end: end),
+            flightShuttleBuilder:
+                (
+                  BuildContext flightContext,
+                  Animation<double> animation,
+                  HeroFlightDirection flightDirection,
+                  BuildContext fromHeroContext,
+                  BuildContext toHeroContext,
+                ) {
+                  return Material(
+                    color: Colors.transparent,
+                    child: toHeroContext.widget,
+                  );
+                },
             child: Material(
               type: MaterialType.transparency,
               child: animatedField,
@@ -320,13 +332,14 @@ class AttachmentAction extends StatelessWidget {
         height: 40,
         fit: BoxFit.contain,
         //color: AppColors.background,
-       // colorBlendMode: BlendMode.srcIn,
+        // colorBlendMode: BlendMode.srcIn,
       );
     } else {
       iconWidget = Icon(icon, size: 24, color: AppColors.background);
     }
 
-    final bool showRecordingAnimation = isRecording && assetPath == 'assets/record.png';
+    final bool showRecordingAnimation =
+        isRecording && assetPath == 'assets/record.png';
 
     return FilledButton(
       onPressed: onTap,
@@ -345,7 +358,9 @@ class AttachmentAction extends StatelessWidget {
             width: 56,
             height: 56,
             decoration: BoxDecoration(
-              color: showRecordingAnimation ? const Color(0xFFFFECEC) : const Color(0xFFF1F2F7),
+              color: showRecordingAnimation
+                  ? const Color(0xFFFFECEC)
+                  : const Color(0xFFF1F2F7),
               borderRadius: BorderRadius.circular(18),
               border: showRecordingAnimation
                   ? Border.all(color: Colors.redAccent, width: 1.6)

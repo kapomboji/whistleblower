@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "385645181807",
+    "project_id": "whistleblower-8fcb2",
+    "storage_bucket": "whistleblower-8fcb2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:385645181807:android:b5a08dc68e087e3ca3c69a",
+        "android_client_info": {
+          "package_name": "com.pixelz.whistleblower"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBh4jQoBSeYZp7NKTNpeA-uUA0-MryNS0w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

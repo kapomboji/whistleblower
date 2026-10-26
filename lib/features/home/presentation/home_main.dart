@@ -6,311 +6,259 @@ import '../../../theme/app_theme.dart';
 class HomeMain extends StatelessWidget {
   const HomeMain({super.key});
 
+  static const List<_ReportCategory> _categories = [
+    _ReportCategory(
+      title: 'Fraud\n& Theft',
+      reportTitle: 'Report Fraud / Theft',
+      iconPath: 'assets/Fraud.png',
+    ),
+    _ReportCategory(
+      title: 'Bribery\n& Corruption',
+      reportTitle: 'Report Bribery / Corruption',
+      iconPath: 'assets/Bribery.png',
+    ),
+    _ReportCategory(
+      title: 'Conflicts\nof Interest',
+      reportTitle: 'Report Conflicts of Interest',
+      iconPath: 'assets/Conflict.png',
+    ),
+    _ReportCategory(
+      title: 'Harassment &\nDiscrimination',
+      reportTitle: 'Report Harassment / Discrimination',
+      iconPath: 'assets/Harrassment.png',
+    ),
+    _ReportCategory(
+      title: 'Procurement\nIrregularities',
+      reportTitle: 'Report Procurement Irregularities',
+      iconPath: 'assets/Procurement.png',
+    ),
+    _ReportCategory(
+      title: 'Abuse of\nAuthority',
+      reportTitle: 'Report Abuse of Authority',
+      iconPath: 'assets/AuthorityAbuse.png',
+    ),
+    _ReportCategory(
+      title: 'Financial\nMisreporting',
+      reportTitle: 'Report Financial Misreporting',
+      iconPath: 'assets/Financial.png',
+    ),
+    _ReportCategory(
+      title: 'Breaches of\nCompany Policy',
+      reportTitle: 'Report Breaches of Company Policy',
+      iconPath: 'assets/Ploicyb.png',
+    ),
+    _ReportCategory(
+      title: 'Health, Safety\nand Environmental\nConcerns',
+      reportTitle: 'Report Serious Health, Safety and Environmental Violations',
+      iconPath: 'assets/health.png',
+    ),
+    _ReportCategory(
+      title: 'Other\nConcerns',
+      reportTitle: 'Report Other Concerns',
+      iconPath: 'assets/others.png',
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      body: SafeArea(
-        child: Stack(
-          fit: StackFit.expand,
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        backgroundColor: AppColors.white,
+        body: SafeArea(
+          child: Column(
           children: [
-            Column(
-              children: [
-                Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.fromLTRB(38, 44, 38, 24),
-                  padding: const EdgeInsets.only(top: 12, bottom: 12),
-                  decoration: BoxDecoration(
-                    color: AppColors.white,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 34, 24, 16),
+              child: Column(
+                children: [
+                  Image.asset(
+                    'assets/logo_mark.png',
+                    width: 78,
+                    height: 82,
+                    fit: BoxFit.contain,
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/logo.png',
-                        width: 70.0,
-                        height: 70.0,
-                        fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            width: 70.0,
-                            height: 70.0,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                              border: Border.all(color: AppColors.darkBlue.withValues(alpha: 0.15)),
-                            ),
-                            child: const Icon(Icons.account_balance, size: 24, color: AppColors.darkBlue),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 4),
-                      const Text(
-                        'Select the nature of your report.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontFamily: "CreatoDisplay",
-                          color: AppColors.darkBlue,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'SELECT THE NATURE OF YOUR REPORT',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: AppColors.darkBlue,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
                     ),
-                    child: Container(
-                      color: AppColors.background,
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.fromLTRB(45, 40, 45, 16),
-                        child: Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                            Row(
-                               children: [
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(52),
+                ),
+                child: Container(
+                  width: double.infinity,
+                  color: AppColors.background,
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(24, 48, 24, 24),
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 296),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            for (
+                              var rowIndex = 0;
+                              rowIndex < _categories.length ~/ 2;
+                              rowIndex++
+                            ) ...[
+                              Row(
+                                children: [
                                   Expanded(
-                                  child: _ReportCard(
-                                    title: 'Fraud\n/ Theft',
-                                    onTap: () => Navigator.of(context).pushNamed(
-                                      AppRouter.reportFraud,
-                                      arguments: 'Report Fraud / Theft',
+                                    child: _ReportCard(
+                                      category: _categories[rowIndex * 2],
+                                      onTap: () => _openReport(
+                                        context,
+                                        _categories[rowIndex * 2],
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: _ReportCard(
+                                      category: _categories[rowIndex * 2 + 1],
+                                      showLeftDivider: true,
+                                      onTap: () => _openReport(
+                                        context,
+                                        _categories[rowIndex * 2 + 1],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              if (rowIndex < _categories.length ~/ 2 - 1)
+                                const Divider(
+                                  height: 1,
+                                  thickness: 1,
+                                  color: AppColors.white,
+                                ),
+                            ],
+                            Padding(
+                              padding: const EdgeInsets.only(top: 48),
+                              child: Center(
+                                child: InkWell(
+                                  onTap: () => Navigator.of(
+                                    context,
+                                  ).pushNamed(AppRouter.about),
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(8),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          'About Whistle Blower™ Limited',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color: AppColors.white,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                        SizedBox(height: 4),
+                                        SizedBox(
+                                          width: 190,
+                                          child: Divider(
+                                            height: 1,
+                                            thickness: 1,
+                                            color: AppColors.white,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
-                                Expanded(
-                                  child: _ReportCard(
-                                    title: 'Bribery\n/ corruption',
-                                    showLeftDivider: true,
-                                    onTap: () => Navigator.of(context).pushNamed(
-                                      AppRouter.reportFraud,
-                                      arguments: 'Report Bribery / Corruption',
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Container(
-                              width: double.infinity,
-                              height: 1.0,
-                              margin: const EdgeInsets.symmetric(vertical: 5),
-                              color: AppColors.white,
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: _ReportCard(
-                                    title: 'Conflicts \n of Intrest',
-                                    onTap: () => Navigator.of(context).pushNamed(
-                                      AppRouter.reportFraud,
-                                      arguments: 'Report Conflicts of Interest',
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: _ReportCard(
-                                    title: 'Harassment /\nDiscrimination',
-                                    showLeftDivider: true,
-                                    onTap: () => Navigator.of(context).pushNamed(
-                                      AppRouter.reportFraud,
-                                      arguments: 'Report Harassment / Discrimination',
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Container(
-                              width: double.infinity,
-                              height: 1.0,
-                              margin: const EdgeInsets.symmetric(vertical: 8),
-                              color: AppColors.white,
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: _ReportCard(
-                                    title: 'Procurement\nirregularities',
-                                    onTap: () => Navigator.of(context).pushNamed(
-                                      AppRouter.reportFraud,
-                                      arguments: 'Report Procurement Irregularities',
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: _ReportCard(
-                                    title: 'Abuse of\nAuthority',
-                                    showLeftDivider: true,
-                                    onTap: () => Navigator.of(context).pushNamed(
-                                      AppRouter.reportFraud,
-                                      arguments: 'Report Abuse of Authority',
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Container(
-                              width: double.infinity,
-                              height: 1.0,
-                              margin: const EdgeInsets.symmetric(vertical: 8),
-                              color: AppColors.white,
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: _ReportCard(
-                                    title: 'Financial\nMisreporting',
-                                    onTap: () => Navigator.of(context).pushNamed(
-                                      AppRouter.reportFraud,
-                                      arguments: 'Report Financial Misreporting',
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: _ReportCard(
-                                    title: 'Breaches of\nCompany Policy',
-                                    showLeftDivider: true,
-                                    onTap: () => Navigator.of(context).pushNamed(
-                                      AppRouter.reportFraud,
-                                      arguments: 'Report Breaches of Company Policy',
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Container(
-                              width: double.infinity,
-                              height: 1.0,
-                              margin: const EdgeInsets.symmetric(vertical: 8),
-                              color: AppColors.white,
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: _ReportCard(
-                                    title: 'Serious health, safety\nand Enviromental\nViolations',
-                                    onTap: () => Navigator.of(context).pushNamed(
-                                      AppRouter.reportFraud,
-                                      arguments: 'Report Serious Health, Safety and Environmental Violations',
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: _ReportCard(
-                                    title: 'About\nWhistle Blower™\nLimited',
-                                    showLeftDivider: true,
-                                    onTap: () => Navigator.of(context).pushNamed(AppRouter.about),
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
                           ],
                         ),
-                        ),
                       ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-        ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ReportCard extends StatelessWidget {
-  const _ReportCard({
-    required this.title,
-    this.showLeftDivider = false,
-    this.onTap,
-  });
-
-  final String title;
-  final bool showLeftDivider;
-  final VoidCallback? onTap;
-  final iconMap = const {
-    'Fraud\n/ Theft': 'assets/Fraud.png',
-    'Bribery\n/ corruption': 'assets/Bribery.png',
-    'Conflicts \n of Intrest': 'assets/Conflict.png',
-    'Harassment /\nDiscrimination': 'assets/Harrassment.png',
-    'Procurement\nirregularities': 'assets/Procurement.png',
-    'Abuse of\nAuthority': 'assets/AuthorityAbuse.png',
-    'Financial\nMisreporting': 'assets/Financial.png',
-    'Breaches of\nCompany Policy': 'assets/Ploicyb.png',
-    'Serious health, safety\nand Enviromental\nViolations': 'assets/health.png',
-    'About\nWhistle Blower™\nLimited': 'assets/Info.png'
-  };
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 96,
-      padding: const EdgeInsets.symmetric(horizontal: 6),
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.zero,
-        border: showLeftDivider
-            ? Border(
-                left: BorderSide(
-                  color: AppColors.white,
-                  width: 1.0,
-                ),
-              )
-            : null,
-      ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Builder(builder: (context) {
-              final iconPath = iconMap[title];
-              final Widget iconWidget = iconPath != null
-                  ? Image.asset(
-                      iconPath,
-                      width: 32,
-                      height: 32,
-                      fit: BoxFit.scaleDown,
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Icon(Icons.image_not_supported, size: 32, color: AppColors.white);
-                      },
-                    )
-                  : const Icon(Icons.image_not_supported, size: 32, color: AppColors.white);
-
-              return iconWidget;
-            }),
-            const SizedBox(height: 2),
-            Flexible(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    title,
-                    textAlign: TextAlign.center,
-                    maxLines: 4,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: AppColors.white,
-                      fontSize: 12,
-                      fontFamily: "CreatoDisplay",
-                      fontWeight: FontWeight.w400,
                     ),
                   ),
                 ),
               ),
             ),
           ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _openReport(BuildContext context, _ReportCategory category) {
+    Navigator.of(
+      context,
+    ).pushNamed(AppRouter.reportFraud, arguments: category.reportTitle);
+  }
+}
+
+class _ReportCategory {
+  const _ReportCategory({
+    required this.title,
+    required this.reportTitle,
+    required this.iconPath,
+  });
+
+  final String title;
+  final String reportTitle;
+  final String iconPath;
+}
+
+class _ReportCard extends StatelessWidget {
+  const _ReportCard({
+    required this.category,
+    required this.onTap,
+    this.showLeftDivider = false,
+  });
+
+  final _ReportCategory category;
+  final VoidCallback onTap;
+  final bool showLeftDivider;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 110,
+      decoration: BoxDecoration(
+        border: showLeftDivider
+            ? const Border(left: BorderSide(color: AppColors.white, width: 1))
+            : null,
+      ),
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                category.iconPath,
+                width: 40,
+                height: 40,
+                fit: BoxFit.contain,
+              ),
+              const SizedBox(height: 4),
+              Flexible(
+                child: Text(
+                  category.title,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: AppColors.white,
+                    fontSize: 14,
+                    height: 1.1,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

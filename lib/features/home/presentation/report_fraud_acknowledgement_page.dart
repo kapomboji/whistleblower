@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../core/network/report_submission_service.dart';
 import '../../../routing/app_router.dart';
 import '../../../theme/app_theme.dart';
 import 'report_fraud_flow_data.dart';
@@ -11,12 +12,17 @@ class ReportFraudAcknowledgementPage extends StatefulWidget {
   final String? caseNumber;
 
   @override
-  State<ReportFraudAcknowledgementPage> createState() => _ReportFraudAcknowledgementPageState();
+  State<ReportFraudAcknowledgementPage> createState() =>
+      _ReportFraudAcknowledgementPageState();
 }
 
-class _ReportFraudAcknowledgementPageState extends State<ReportFraudAcknowledgementPage> {
+class _ReportFraudAcknowledgementPageState
+    extends State<ReportFraudAcknowledgementPage> {
   bool _acknowledged = false;
-  String get _caseNumber => widget.caseNumber ?? ReportFraudFlowData.currentCaseNumber;
+  bool _isSubmitting = false;
+  String get _caseNumber =>
+      widget.caseNumber ?? ReportFraudFlowData.currentCaseNumber;
+  final ReportSubmissionService _submissionService = ReportSubmissionService();
 
   @override
   void initState() {
@@ -37,14 +43,36 @@ class _ReportFraudAcknowledgementPageState extends State<ReportFraudAcknowledgem
     );
   }
 
-  void _submitReport() {
+  @override
+  void dispose() {
+    _submissionService.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submitReport() async {
     if (!_acknowledged) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please acknowledge before submitting')),
       );
       return;
     }
-    Navigator.of(context).pushNamed(AppRouter.reportFraudSubmitted);
+    setState(() {
+      _isSubmitting = true;
+    });
+    try {
+      ReportFraudFlowData.currentCaseNumber = await _submissionService
+          .submitReport();
+      if (!mounted) return;
+      Navigator.of(context).pushNamed(AppRouter.reportFraudSubmitted);
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _isSubmitting = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Unable to submit report: $error')),
+      );
+    }
   }
 
   @override
@@ -107,7 +135,10 @@ class _ReportFraudAcknowledgementPageState extends State<ReportFraudAcknowledgem
                             color: AppColors.white,
                             borderRadius: BorderRadius.circular(8),
                             border: _acknowledged
-                                ? Border.all(color: const Color(0xFF00B894), width: 2)
+                                ? Border.all(
+                                    color: const Color(0xFF00B894),
+                                    width: 2,
+                                  )
                                 : null,
                           ),
                           child: InkWell(
@@ -118,38 +149,63 @@ class _ReportFraudAcknowledgementPageState extends State<ReportFraudAcknowledgem
                             },
                             child: Center(
                               child: _acknowledged
-                                  ? const Icon(Icons.check, size: 28, color: Color(0xFF00B894))
+                                  ? const Icon(
+                                      Icons.check,
+                                      size: 28,
+                                      color: Color(0xFF00B894),
+                                    )
                                   : const SizedBox(),
                             ),
                           ),
                         ),
                         const SizedBox(height: 16),
-                        GestureDetector(
-                          onTap: _copyCaseNumber,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                            decoration: BoxDecoration(
-                              color: AppColors.white.withValues(alpha: 0.18),
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: AppColors.white.withValues(alpha: 0.55)),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(Icons.copy_all_rounded, size: 16, color: AppColors.white),
-                                const SizedBox(width: 8),
-                                Text(
-                                  _caseNumber,
-                                  style: const TextStyle(
-                                    color: AppColors.white,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w700,
+                        if (_caseNumber.isNotEmpty)
+                          GestureDetector(
+                            onTap: _copyCaseNumber,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 10,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.white.withValues(alpha: 0.18),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: AppColors.white.withValues(
+                                    alpha: 0.55,
                                   ),
                                 ),
-                              ],
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.copy_all_rounded,
+                                    size: 16,
+                                    color: AppColors.white,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    _caseNumber,
+                                    style: const TextStyle(
+                                      color: AppColors.white,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        else
+                          const Text(
+                            'Your reference number will be assigned after submission.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: AppColors.white,
+                              fontSize: 12,
                             ),
                           ),
-                        ),
                         const SizedBox(height: 20),
                       ],
                     ),
@@ -163,7 +219,7 @@ class _ReportFraudAcknowledgementPageState extends State<ReportFraudAcknowledgem
                 width: double.infinity,
                 height: 48,
                 child: FilledButton(
-                  onPressed: _submitReport,
+                  onPressed: _isSubmitting ? null : _submitReport,
                   style: FilledButton.styleFrom(
                     backgroundColor: AppColors.white,
                     foregroundColor: const Color(0xFF49B3F3),
@@ -171,14 +227,20 @@ class _ReportFraudAcknowledgementPageState extends State<ReportFraudAcknowledgem
                       borderRadius: BorderRadius.circular(24),
                     ),
                   ),
-                  child: const Text(
-                    'SAVE AND REPORT',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.3,
-                    ),
-                  ),
+                  child: _isSubmitting
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Text(
+                          'SAVE AND REPORT',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.3,
+                          ),
+                        ),
                 ),
               ),
             ),

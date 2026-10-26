@@ -20,7 +20,8 @@ class ReportFraudAttachmentPage extends StatefulWidget {
   const ReportFraudAttachmentPage({super.key});
 
   @override
-  State<ReportFraudAttachmentPage> createState() => _ReportFraudAttachmentPageState();
+  State<ReportFraudAttachmentPage> createState() =>
+      _ReportFraudAttachmentPageState();
 }
 
 class _ReportFraudAttachmentPageState extends State<ReportFraudAttachmentPage> {
@@ -43,7 +44,19 @@ class _ReportFraudAttachmentPageState extends State<ReportFraudAttachmentPage> {
   Future<void> _addDocument() async {
     final result = await FilePicker.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['pdf', 'doc', 'docx', 'png', 'jpg', 'jpeg', 'mp4', 'mov', 'wav', 'm4a', 'aac'],
+      allowedExtensions: [
+        'pdf',
+        'png',
+        'jpg',
+        'jpeg',
+        'webp',
+        'txt',
+        'mp3',
+        'ogg',
+        'wav',
+        'mp4',
+        'webm',
+      ],
     );
 
     if (result == null || result.files.isEmpty) return;
@@ -54,18 +67,24 @@ class _ReportFraudAttachmentPageState extends State<ReportFraudAttachmentPage> {
     if (!_cloudStorage.isUploadSizeWithinLimit(file.size)) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Upload limit exceeded. Maximum allowed size is 50 MB.')),
+        const SnackBar(
+          content: Text(
+            'Upload limit exceeded. Maximum allowed size is 50 MB.',
+          ),
+        ),
       );
       return;
     }
 
     setState(() {
-      _attachments.add(AttachmentItem(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        name: file.name,
-        path: path,
-        type: AttachmentType.document,
-      ));
+      _attachments.add(
+        AttachmentItem(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          name: file.name,
+          path: path,
+          type: AttachmentType.document,
+        ),
+      );
     });
 
     await _compressAndShowStats(File(path));
@@ -73,7 +92,7 @@ class _ReportFraudAttachmentPageState extends State<ReportFraudAttachmentPage> {
 
   Future<void> _pickFromCloud(String provider) async {
     if (!mounted) return;
-    
+
     if (provider == 'Google Drive') {
       await _pickFromGoogleDrive();
     } else if (provider == 'Dropbox') {
@@ -181,9 +200,9 @@ class _ReportFraudAttachmentPageState extends State<ReportFraudAttachmentPage> {
     } catch (e) {
       if (!mounted) return;
       if (Navigator.canPop(context)) Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
     }
   }
 
@@ -211,7 +230,9 @@ class _ReportFraudAttachmentPageState extends State<ReportFraudAttachmentPage> {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Dropbox authentication is not configured. Add your Dropbox OAuth client ID first.'),
+            content: Text(
+              'Dropbox authentication is not configured. Add your Dropbox OAuth client ID first.',
+            ),
           ),
         );
         return;
@@ -233,7 +254,9 @@ class _ReportFraudAttachmentPageState extends State<ReportFraudAttachmentPage> {
 
       if (accessToken == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Dropbox is not connected for this session')),
+          const SnackBar(
+            content: Text('Dropbox is not connected for this session'),
+          ),
         );
         return;
       }
@@ -249,9 +272,9 @@ class _ReportFraudAttachmentPageState extends State<ReportFraudAttachmentPage> {
       }
 
       if (dropboxFiles.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No Dropbox files found')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('No Dropbox files found')));
         return;
       }
 
@@ -309,9 +332,9 @@ class _ReportFraudAttachmentPageState extends State<ReportFraudAttachmentPage> {
     } catch (e) {
       if (!mounted) return;
       if (Navigator.canPop(context)) Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
     }
   }
 
@@ -373,27 +396,37 @@ class _ReportFraudAttachmentPageState extends State<ReportFraudAttachmentPage> {
       },
     );
   }
+
   Future<void> _capturePhoto() async {
     final picker = ImagePicker();
-    final file = await picker.pickImage(source: ImageSource.camera, imageQuality: 80);
+    final file = await picker.pickImage(
+      source: ImageSource.camera,
+      imageQuality: 80,
+    );
     if (file == null) return;
 
     final pickedFile = File(file.path);
     if (!_cloudStorage.isUploadWithinLimit(pickedFile)) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Upload limit exceeded. Maximum allowed size is 50 MB.')),
+        const SnackBar(
+          content: Text(
+            'Upload limit exceeded. Maximum allowed size is 50 MB.',
+          ),
+        ),
       );
       return;
     }
 
     setState(() {
-      _attachments.add(AttachmentItem(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        name: file.name,
-        path: file.path,
-        type: AttachmentType.document,
-      ));
+      _attachments.add(
+        AttachmentItem(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          name: file.name,
+          path: file.path,
+          type: AttachmentType.document,
+        ),
+      );
     });
   }
 
@@ -407,19 +440,25 @@ class _ReportFraudAttachmentPageState extends State<ReportFraudAttachmentPage> {
           if (!_cloudStorage.isUploadWithinLimit(recordedFile)) {
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Upload limit exceeded. Maximum allowed size is 50 MB.')),
+                const SnackBar(
+                  content: Text(
+                    'Upload limit exceeded. Maximum allowed size is 50 MB.',
+                  ),
+                ),
               );
             }
             return;
           }
 
           setState(() {
-            _attachments.add(AttachmentItem(
-              id: DateTime.now().millisecondsSinceEpoch.toString(),
-              name: 'Audio_${DateTime.now().millisecondsSinceEpoch}.wav',
-              path: path,
-              type: AttachmentType.audio,
-            ));
+            _attachments.add(
+              AttachmentItem(
+                id: DateTime.now().millisecondsSinceEpoch.toString(),
+                name: 'Audio_${DateTime.now().millisecondsSinceEpoch}.wav',
+                path: path,
+                type: AttachmentType.audio,
+              ),
+            );
             _recordingAudio = false;
           });
         }
@@ -436,25 +475,34 @@ class _ReportFraudAttachmentPageState extends State<ReportFraudAttachmentPage> {
       if (!status.isGranted) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Microphone permission is required to record audio')),
+            const SnackBar(
+              content: Text(
+                'Microphone permission is required to record audio',
+              ),
+            ),
           );
         }
         return;
       }
 
       try {
-        final isSupported = await _recorder.isEncoderSupported(AudioEncoder.wav);
+        final isSupported = await _recorder.isEncoderSupported(
+          AudioEncoder.wav,
+        );
         if (!isSupported) {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('WAV encoding is not supported on this device')),
+              const SnackBar(
+                content: Text('WAV encoding is not supported on this device'),
+              ),
             );
           }
           return;
         }
 
         final documentsDir = await getApplicationDocumentsDirectory();
-        final audioFileName = 'audio_${DateTime.now().millisecondsSinceEpoch}.wav';
+        final audioFileName =
+            'audio_${DateTime.now().millisecondsSinceEpoch}.wav';
         final audioPath = '${documentsDir.path}/$audioFileName';
 
         await _recorder.start(
@@ -480,11 +528,16 @@ class _ReportFraudAttachmentPageState extends State<ReportFraudAttachmentPage> {
   }
 
   Future<void> _downloadAndAttachGoogleDriveFile(DriveFileInfo file) async {
-    final downloadedFile = await _cloudStorage.downloadFileFromDrive(file.id, file.name);
+    final downloadedFile = await _cloudStorage.downloadFileFromDrive(
+      file.id,
+      file.name,
+    );
     if (downloadedFile == null) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Unable to download the selected Google Drive file')),
+        const SnackBar(
+          content: Text('Unable to download the selected Google Drive file'),
+        ),
       );
       return;
     }
@@ -493,11 +546,16 @@ class _ReportFraudAttachmentPageState extends State<ReportFraudAttachmentPage> {
   }
 
   Future<void> _downloadAndAttachDropboxFile(DropboxFileInfo file) async {
-    final downloadedFile = await _cloudStorage.downloadFileFromDropbox(file.path, file.name);
+    final downloadedFile = await _cloudStorage.downloadFileFromDropbox(
+      file.path,
+      file.name,
+    );
     if (downloadedFile == null) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Unable to download the selected Dropbox file')),
+        const SnackBar(
+          content: Text('Unable to download the selected Dropbox file'),
+        ),
       );
       return;
     }
@@ -509,19 +567,25 @@ class _ReportFraudAttachmentPageState extends State<ReportFraudAttachmentPage> {
     if (!_cloudStorage.isUploadWithinLimit(file)) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Upload limit exceeded. Maximum allowed size is 50 MB.')),
+        const SnackBar(
+          content: Text(
+            'Upload limit exceeded. Maximum allowed size is 50 MB.',
+          ),
+        ),
       );
       return;
     }
 
     if (!mounted) return;
     setState(() {
-      _attachments.add(AttachmentItem(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        name: fileName,
-        path: file.path,
-        type: AttachmentType.document,
-      ));
+      _attachments.add(
+        AttachmentItem(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          name: fileName,
+          path: file.path,
+          type: AttachmentType.document,
+        ),
+      );
     });
   }
 
@@ -533,7 +597,7 @@ class _ReportFraudAttachmentPageState extends State<ReportFraudAttachmentPage> {
 
   Future<void> _compressAndShowStats(File file) async {
     if (!mounted) return;
-    
+
     final stats = await _compression.getCompressionStats(file);
     if (stats == null || !mounted) return;
 
@@ -555,7 +619,7 @@ class _ReportFraudAttachmentPageState extends State<ReportFraudAttachmentPage> {
     try {
       final file = File(filePath);
       final bytes = file.lengthSync();
-      
+
       if (bytes < 1024) {
         return '$bytes B';
       } else if (bytes < 1024 * 1024) {
@@ -618,7 +682,11 @@ class _ReportFraudAttachmentPageState extends State<ReportFraudAttachmentPage> {
                 ),
               ),
               const SizedBox(height: 16),
-              const Icon(Icons.play_circle_fill, size: 48, color: AppColors.background),
+              const Icon(
+                Icons.play_circle_fill,
+                size: 48,
+                color: AppColors.background,
+              ),
               const SizedBox(height: 12),
               Text(
                 item.name,
@@ -637,7 +705,11 @@ class _ReportFraudAttachmentPageState extends State<ReportFraudAttachmentPage> {
                     onPressed: () async {
                       await _playAudio(item.path);
                     },
-                    icon: Icon(_activeAudioPath == item.path && _isPlayingAudio ? Icons.pause : Icons.play_arrow),
+                    icon: Icon(
+                      _activeAudioPath == item.path && _isPlayingAudio
+                          ? Icons.pause
+                          : Icons.play_arrow,
+                    ),
                     iconSize: 28,
                   ),
                   const SizedBox(width: 12),
@@ -690,10 +762,11 @@ class _ReportFraudAttachmentPageState extends State<ReportFraudAttachmentPage> {
                   assetPath,
                   width: 28,
                   height: 28,
-                  errorBuilder: (context, error, stackTrace) => const Icon(Icons.cloud, color: AppColors.darkBlue),
+                  errorBuilder: (context, error, stackTrace) =>
+                      const Icon(Icons.cloud, color: AppColors.darkBlue),
                 )
-              else if (icon != null)
-                icon,
+              else if (icon case final Icon iconWidget)
+                iconWidget,
               const SizedBox(width: 12),
               Text(
                 label,
@@ -762,7 +835,9 @@ class _ReportFraudAttachmentPageState extends State<ReportFraudAttachmentPage> {
                   Row(
                     children: [
                       Text(
-                        isAudio ? 'Tap to play audio file' : 'Tap to preview file',
+                        isAudio
+                            ? 'Tap to play audio file'
+                            : 'Tap to preview file',
                         style: const TextStyle(
                           color: Color(0xFF7D8BA3),
                           fontSize: 12,
@@ -799,216 +874,248 @@ class _ReportFraudAttachmentPageState extends State<ReportFraudAttachmentPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
           children: [
             FraudTopBar(title: ReportFraudFlowData.currentReportTitle),
-            const SizedBox(height: 12),
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SectionHeader(title: 'ADD ATTACHMENT'),
-                    const SizedBox(height: 5),
-                    const SizedBox(
-                      width: double.infinity,
-                      child: Text(
-                        'Submit evidence if available e.g. document, photo, video, audio etc.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: AppColors.darkBlue,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w400,
+              child: Container(
+                color: AppColors.white,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 20,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SectionHeader(title: 'ADD ATTACHMENT'),
+                      const SizedBox(height: 5),
+                      const SizedBox(
+                        width: double.infinity,
+                        child: Text(
+                          'Submit evidence if available e.g. document, photo, video, audio etc.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: AppColors.darkBlue,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      child: InkWell(
-                        onTap: _showCloudPicker,
-                        borderRadius: BorderRadius.circular(24),
-                        child: Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(vertical: 28),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF1F2F7),
-                            borderRadius: BorderRadius.circular(24),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              Icon(Icons.cloud_upload_outlined, size: 42, color: AppColors.background),
-                              SizedBox(height: 14),
-                              Text(
-                                'Upload any relevant documents, photos, videos, or audio recordings to support your report',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: AppColors.darkBlue,
-                                  fontSize: 12,
-                                  height: 1.4,
+                      const SizedBox(height: 10),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        child: InkWell(
+                          onTap: _showCloudPicker,
+                          borderRadius: BorderRadius.circular(24),
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(vertical: 28),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF1F2F7),
+                              borderRadius: BorderRadius.circular(24),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Icon(
+                                  Icons.cloud_upload_outlined,
+                                  size: 42,
+                                  color: AppColors.background,
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 18),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Divider(
-                              color: const Color(0xFFBFC9D6),
-                              thickness: 1,
-                              endIndent: 12,
+                                SizedBox(height: 14),
+                                Text(
+                                  'Upload any relevant documents, photos, videos, or audio recordings to support your report',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: AppColors.darkBlue,
+                                    fontSize: 12,
+                                    height: 1.4,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          const Text(
-                            'or',
+                        ),
+                      ),
+                      const SizedBox(height: 18),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Divider(
+                                color: const Color(0xFFBFC9D6),
+                                thickness: 1,
+                                endIndent: 12,
+                              ),
+                            ),
+                            const Text(
+                              'or',
+                              style: TextStyle(
+                                color: Color(0xFF7D8BA3),
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Expanded(
+                              child: Divider(
+                                color: const Color(0xFFBFC9D6),
+                                thickness: 1,
+                                indent: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: AttachmentAction(
+                              assetPath: 'assets/capture.png',
+                              label: 'Open Camera & Capture',
+                              onTap: _capturePhoto,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: AttachmentAction(
+                              assetPath: 'assets/record.png',
+                              label: _recordingAudio
+                                  ? 'Stop Recording'
+                                  : 'Record Audio File',
+                              onTap: _recordAudio,
+                              isRecording: _recordingAudio,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+                      // removed the separate Upload File button — cloud area now handles provider selection
+                      const SizedBox(height: 14),
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 220),
+                        curve: Curves.easeInOut,
+                        height: _attachmentsCollapsed ? 82 : 220,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF1F2F7),
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        child: Column(
+                          children: [
+                            GestureDetector(
+                              onTap: _toggleAttachmentsPanel,
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  top: 8,
+                                  bottom: 6,
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Container(
+                                      width: 38,
+                                      height: 4,
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFCBD3DE),
+                                        borderRadius: BorderRadius.circular(
+                                          999,
+                                        ),
+                                      ),
+                                    ),
+                                    if (_attachmentsCollapsed)
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 10),
+                                        child: Text(
+                                          _attachments.isEmpty
+                                              ? '0 files attached'
+                                              : '${_attachments.length} file${_attachments.length == 1 ? '' : 's'} attached',
+                                          style: const TextStyle(
+                                            color: AppColors.darkBlue,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            if (!_attachmentsCollapsed)
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                  child: _attachments.isEmpty
+                                      ? const Center(
+                                          child: Text(
+                                            'No attachments added yet',
+                                            style: TextStyle(
+                                              color: Color(0xFF7D8BA3),
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        )
+                                      : ListView.separated(
+                                          itemCount: _attachments.length,
+                                          separatorBuilder: (context, index) =>
+                                              const SizedBox(height: 4),
+                                          itemBuilder: (context, index) =>
+                                              _buildAttachmentRow(
+                                                _attachments[index],
+                                              ),
+                                        ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Each uploaded file will be archived and not editable. Please review to ensure completeness.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Color(0xFF7D8BA3),
+                          fontSize: 12,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 46,
+                        child: FilledButton(
+                          onPressed: () {
+                            ReportFraudFlowData.attachments =
+                                List<AttachmentItem>.unmodifiable(_attachments);
+                            Navigator.of(
+                              context,
+                            ).pushNamed(AppRouter.reportFraudRewards);
+                          },
+                          style: FilledButton.styleFrom(
+                            backgroundColor: AppColors.background,
+                            foregroundColor: AppColors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                          ),
+                          child: const Text(
+                            'SAVE AND CONTINUE',
                             style: TextStyle(
-                              color: Color(0xFF7D8BA3),
+                              fontSize: 14,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          Expanded(
-                            child: Divider(
-                              color: const Color(0xFFBFC9D6),
-                              thickness: 1,
-                              indent: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: AttachmentAction(
-                            assetPath: 'assets/capture.png',
-                            label: 'Open Camera & Capture',
-                            onTap: _capturePhoto,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: AttachmentAction(
-                            assetPath: 'assets/record.png',
-                            label: _recordingAudio ? 'Stop Recording' : 'Record Audio File',
-                            onTap: _recordAudio,
-                            isRecording: _recordingAudio,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 14),
-                    // removed the separate Upload File button — cloud area now handles provider selection
-                    const SizedBox(height: 14),
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 220),
-                      curve: Curves.easeInOut,
-                      height: _attachmentsCollapsed ? 82 : 220,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF1F2F7),
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      child: Column(
-                        children: [
-                          GestureDetector(
-                            onTap: _toggleAttachmentsPanel,
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 8, bottom: 6),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Container(
-                                    width: 38,
-                                    height: 4,
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFFCBD3DE),
-                                      borderRadius: BorderRadius.circular(999),
-                                    ),
-                                  ),
-                                  if (_attachmentsCollapsed)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 10),
-                                      child: Text(
-                                        _attachments.isEmpty
-                                            ? '0 files attached'
-                                            : '${_attachments.length} file${_attachments.length == 1 ? '' : 's'} attached',
-                                        style: const TextStyle(
-                                          color: AppColors.darkBlue,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          if (!_attachmentsCollapsed)
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                child: _attachments.isEmpty
-                                    ? const Center(
-                                        child: Text(
-                                          'No attachments added yet',
-                                          style: TextStyle(
-                                            color: Color(0xFF7D8BA3),
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      )
-                                    : ListView.separated(
-                                        itemCount: _attachments.length,
-                                        separatorBuilder: (context, index) => const SizedBox(height: 4),
-                                        itemBuilder: (context, index) => _buildAttachmentRow(_attachments[index]),
-                                      ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Each uploaded file will be archived and not editable. Please review to ensure completeness.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Color(0xFF7D8BA3),
-                        fontSize: 12,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48,
-                      child: FilledButton(
-                        onPressed: () {
-                          Navigator.of(context).pushNamed(AppRouter.reportFraudAcknowledgement);
-                        },
-                        style: FilledButton.styleFrom(
-                          backgroundColor: AppColors.background,
-                          foregroundColor: AppColors.white,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                        ),
-                        child: const Text(
-                          'SAVE AND CONTINUE',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                  ],
+                      const SizedBox(height: 20),
+                    ],
+                  ),
                 ),
               ),
             ),

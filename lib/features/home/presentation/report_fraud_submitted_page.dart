@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../routing/app_router.dart';
 import '../../../theme/app_theme.dart';
+import 'report_fraud_flow_data.dart';
 
 class ReportFraudSubmittedPage extends StatelessWidget {
   const ReportFraudSubmittedPage({super.key});
@@ -30,7 +31,10 @@ class ReportFraudSubmittedPage extends StatelessWidget {
                       'assets/submitted.svg',
                       width: 52,
                       height: 52,
-                      colorFilter: const ColorFilter.mode(AppColors.background, BlendMode.srcIn),
+                      colorFilter: const ColorFilter.mode(
+                        AppColors.background,
+                        BlendMode.srcIn,
+                      ),
                     ),
                   ),
                 ),
@@ -44,6 +48,19 @@ class ReportFraudSubmittedPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Text(
+                    'Reference number: ${ReportFraudFlowData.currentCaseNumber}',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: AppColors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 32),
                   child: Text(
@@ -59,27 +76,33 @@ class ReportFraudSubmittedPage extends StatelessWidget {
               ],
             ),
             Column(
-              
               children: [
                 SizedBox(
                   width: 380,
                   height: 48,
-                    
+
                   child: FilledButton(
                     onPressed: () {
-                      Navigator.of(context).pushNamedAndRemoveUntil(AppRouter.home, (route) => false);
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        AppRouter.home,
+                        (route) => false,
+                      );
                     },
                     style: FilledButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 25),
-                     
+
                       backgroundColor: AppColors.darkBlue,
                       foregroundColor: AppColors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24),
+                      ),
                     ),
                     child: const Text(
                       'FINISH',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-                      
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ),
