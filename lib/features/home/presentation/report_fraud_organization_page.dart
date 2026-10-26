@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/network/organization_service.dart';
 import '../../../routing/app_router.dart';
 import '../../../theme/app_theme.dart';
 import 'report_fraud_flow_data.dart';
@@ -20,12 +21,6 @@ class ReportFraudOrganizationPage extends StatefulWidget {
 
 class _ReportFraudOrganizationPageState
     extends State<ReportFraudOrganizationPage> {
-  static const List<String> _malawiCompanies = [
-    'AMG Global',
-    'Whistleblower',
-    'Mystery Shopper',
-  ];
-
   final _formKey = GlobalKey<FormState>();
   final _companyController = TextEditingController();
   final _divisionController = TextEditingController();
@@ -33,10 +28,15 @@ class _ReportFraudOrganizationPageState
   final _incidentController = TextEditingController();
   final _personRoleController = TextEditingController();
   final _dateTimeController = TextEditingController();
+  final _organizationService = OrganizationService();
+  List<String> _organizations = [];
+  String? _organizationLoadError;
+  bool _isLoadingOrganizations = true;
 
   @override
   void initState() {
     super.initState();
+    _loadOrganizations();
   }
 
   @override
@@ -47,7 +47,30 @@ class _ReportFraudOrganizationPageState
     _incidentController.dispose();
     _personRoleController.dispose();
     _dateTimeController.dispose();
+    _organizationService.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadOrganizations() async {
+    setState(() {
+      _isLoadingOrganizations = true;
+      _organizationLoadError = null;
+    });
+
+    try {
+      final organizations = await _organizationService.fetchOrganizations();
+      if (!mounted) return;
+      setState(() {
+        _organizations = organizations;
+        _isLoadingOrganizations = false;
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _organizationLoadError = error.toString();
+        _isLoadingOrganizations = false;
+      });
+    }
   }
 
   Future<void> _pickIncidentDateTime() async {
@@ -183,11 +206,11 @@ class _ReportFraudOrganizationPageState
                                   ),
                                 ),
                               ),
-                              dropdownMenuEntries: _malawiCompanies
+                              dropdownMenuEntries: _organizations
                                   .map(
-                                    (company) => DropdownMenuEntry<String>(
-                                      value: company,
-                                      label: company,
+                                    (organization) => DropdownMenuEntry<String>(
+                                      value: organization,
+                                      label: organization,
                                     ),
                                   )
                                   .toList(),
@@ -197,6 +220,57 @@ class _ReportFraudOrganizationPageState
                                 }
                               },
                             ),
+                            if (_isLoadingOrganizations)
+                              const Padding(
+                                padding: EdgeInsets.only(top: 8),
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 14,
+                                      height: 14,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    ),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      'Loading organizations...',
+                                      style: TextStyle(fontSize: 12),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            else if (_organizationLoadError != null)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        'Could not load organizations. You can enter a name manually.',
+                                        style: TextStyle(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.error,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: _loadOrganizations,
+                                      child: const Text('Retry'),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            else if (_organizations.isEmpty)
+                              const Padding(
+                                padding: EdgeInsets.only(top: 8),
+                                child: Text(
+                                  'No organizations are listed yet. You can enter a name manually.',
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                              ),
                             const SizedBox(height: 14),
                             const Text(
                               'Division / Branch and City / District',

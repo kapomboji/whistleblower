@@ -1,5 +1,5 @@
-﻿import 'package:flutter/material.dart';
-import 'package:vector_graphics/vector_graphics.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../routing/app_router.dart';
 import '../../../theme/app_theme.dart';
@@ -31,7 +31,7 @@ class HomePage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const _BrandLockup(),
-                 
+
                   const Text(
                     'Welcome to Whistle Blower™',
                     textAlign: TextAlign.center,
@@ -75,8 +75,8 @@ class _BrandLockup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: VectorGraphic(
-        loader: const AssetBytesLoader('assets/Whistle blower logo.vec'),
+      child: SvgPicture.asset(
+        'assets/svglogo.svg',
         width: 280,
         height: 280,
         fit: BoxFit.contain,
@@ -100,7 +100,10 @@ class _IntroductoryCopy extends StatelessWidget {
             style: TextStyle(fontWeight: FontWeight.w800),
           ),
           TextSpan(text: ' Chartered Accountants and Business Advisors.\n\n'),
-          TextSpan(text: 'This platform allows anonymous reporting of suspected unethical, fraudulent, illegal, or other misconduct within organizations that subscribe to Whistle Blower™ independent whistleblowing service.'),
+          TextSpan(
+            text:
+                'This platform allows anonymous reporting of suspected unethical, fraudulent, illegal, or other misconduct within organizations that subscribe to Whistle Blower™ independent whistleblowing service.',
+          ),
         ],
       ),
       textAlign: TextAlign.center,
@@ -120,7 +123,7 @@ class _SecondaryIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width:40,
+      width: 40,
       height: 40,
       child: Image.asset(
         'assets/anony.png',
@@ -142,16 +145,17 @@ class _ReportButton extends StatelessWidget {
       height: 40,
       child: FilledButton(
         onPressed: () {
-          Navigator.of(context).pushNamedAndRemoveUntil(
-            AppRouter.homemain,
-            (route) => false,
-          );
+          Navigator.of(
+            context,
+          ).pushNamedAndRemoveUntil(AppRouter.homemain, (route) => false);
         },
         style: FilledButton.styleFrom(
           backgroundColor: AppColors.background,
           foregroundColor: AppColors.white,
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

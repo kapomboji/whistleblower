@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
+import 'api_config.dart';
 import '../../features/home/presentation/report_fraud_flow_data.dart';
 
 class ReportSubmissionService {
@@ -12,20 +13,8 @@ class ReportSubmissionService {
   static const _maximumFileBytes = 10 * 1024 * 1024;
   static const _maximumAttachments = 10;
   static const _requestTimeout = Duration(seconds: 90);
-  static const _configuredBaseUrl = String.fromEnvironment(
-    'API_BASE_URL',
-    defaultValue: 'https://api.whistleblower.mw',
-  );
-  static const _requestOrigin = String.fromEnvironment(
-    'API_REQUEST_ORIGIN',
-    defaultValue: 'https://whistleblower.mw',
-  );
 
   final http.Client _client;
-
-  Uri get _reportsUri {
-    return Uri.parse(_configuredBaseUrl).resolve('/api/reports');
-  }
 
   Future<String> submitReport() async {
     final attachments = ReportFraudFlowData.attachments;
@@ -35,8 +24,8 @@ class ReportSubmissionService {
       );
     }
 
-    final request = http.MultipartRequest('POST', _reportsUri)
-      ..headers['Origin'] = _requestOrigin
+    final request = http.MultipartRequest('POST', ApiConfig.reportsUri)
+      ..headers['Origin'] = ApiConfig.requestOrigin
       ..fields.addAll(_buildFields());
 
     for (final attachment in attachments) {
@@ -150,7 +139,12 @@ class ReportSubmissionService {
   }
 
   Map<String, dynamic>? _decodeResponse(String body) {
-    final decoded = jsonDecode(body);
+    dynamic decoded;
+    try {
+      decoded = jsonDecode(body);
+    } on FormatException {
+      return null;
+    }
     if (decoded is! Map<String, dynamic>) return null;
     return decoded;
   }
