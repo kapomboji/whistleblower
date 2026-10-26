@@ -93,12 +93,13 @@ flutter:
     - assets/AuthorityAbuse.png
     - assets/FraudInverted.png
     - assets/others.png
-    - assets/capture.png 
+    - assets/capture.png
     - assets/record.png
     - assets/dropbox.png
     - assets/google_drive.png
     - assets/submitted.svg
     - assets/number.svg
+    - shorebird.yaml
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
